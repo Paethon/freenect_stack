@@ -19,6 +19,7 @@
   <author>Suat Gedikli</author>
   <author>Radu Bogdan Rusu (original openni_camera driver).</author>
   <author>Piyush Khandelwal (libfreenect port).</author>
+  <author>Sebastian Stabinger (added exposure lock via service)</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 

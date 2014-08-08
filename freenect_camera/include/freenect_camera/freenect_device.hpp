@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 #include <libfreenect/libfreenect.h>
-#include <libfreenect/libfreenect-registration.h>
+#include <libfreenect/libfreenect_registration.h>
 #include <freenect_camera/image_buffer.hpp>
 
 namespace freenect_camera {
@@ -53,6 +53,17 @@ namespace freenect_camera {
 
       ~FreenectDevice() {
         shutdown();
+      }
+
+      void setAutoExposure(bool autoExp) {
+	  freenect_flag_value val;
+	  ROS_INFO("Setting exposure");
+	  if(autoExp) {
+	      val = FREENECT_ON;
+	  } else {
+	      val = FREENECT_OFF;
+	  }
+	  freenect_set_flag(device_, FREENECT_AUTO_EXPOSURE,val);
       }
 
       void flushDeviceStreams() {

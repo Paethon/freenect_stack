@@ -62,6 +62,24 @@ DriverNodelet::~DriverNodelet ()
   /// controlled by the driver nodelet.
 }
 
+bool DriverNodelet::setAutoExposure(freenect_camera::setAutoExposure::Request& req,
+				freenect_camera::setAutoExposure::Response& res)
+{
+    if(req.autoExposure)
+    {
+	ROS_INFO("Unlocking exposure");
+	device_->setAutoExposure(true);
+	res.result = true;
+    }
+    else
+    {
+	ROS_INFO("Locking exposure");
+	device_->setAutoExposure(false);
+	res.result = true;
+    }
+    return true;
+}
+
 void DriverNodelet::onInit ()
 {
   // Setting up device can take awhile but onInit shouldn't block, so we spawn a
@@ -69,10 +87,14 @@ void DriverNodelet::onInit ()
   init_thread_ = boost::thread(boost::bind(&DriverNodelet::onInitImpl, this));
 }
 
+// Here all the ROS stuff happens 
 void DriverNodelet::onInitImpl ()
 {
   ros::NodeHandle& nh       = getNodeHandle();        // topics
   ros::NodeHandle& param_nh = getPrivateNodeHandle(); // parameters
+  // ros::NodeHandle& n = getMTNodeHandle();
+  // ros::NodeHandle n("~");
+  std::cout << "Activate!!!" << std::endl;
 
   // Allow remapping namespaces rgb, ir, depth, depth_registered
   image_transport::ImageTransport it(nh);
@@ -164,6 +186,11 @@ void DriverNodelet::onInitImpl ()
   if (!ir_info_manager_->isCalibrated())
     NODELET_WARN("Using default parameters for IR camera calibration.");
 
+    // Register service to turn off depth stream
+    service = param_nh.advertiseService("setAutoExposure", &DriverNodelet::setAutoExposure, this);
+
+    // ros::ServiceServer service = nh.advertiseService<freenect_camera::setAutoExposure::Request, freenect_camera::setAutoExposure::Response>("/setAutoExposure", boost::bind(&DriverNodelet::setAutoExposure, this, _1, _2));
+
   // Advertise all published topics
   {
     // Prevent connection callbacks from executing until we've set all the publishers. Otherwise
@@ -238,6 +265,8 @@ void DriverNodelet::onInitImpl ()
   }
 
   device_->publishersAreReady();
+  // for(;;)
+      // boost::this_thread::sleep(boost::posix_time::milliseconds(10));
 }
 
 void DriverNodelet::updateDiagnostics() {

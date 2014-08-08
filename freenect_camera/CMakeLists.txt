@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(freenect_camera)
+set(libfreenect_DIR /usr/local/share/libfreenect)
 find_package(catkin REQUIRED
              COMPONENTS
+	     std_msgs
+	     message_generation
              camera_info_manager
              diagnostic_updater
              dynamic_reconfigure
@@ -9,7 +12,10 @@ find_package(catkin REQUIRED
              nodelet
              roscpp
              sensor_msgs
-             pluginlib )
+             pluginlib 
+	     libfreenect)
+
+
 
 # Resolve system dependency on libfreenect, which does not provide a
 # CMake find_package() module.
@@ -18,6 +24,16 @@ pkg_check_modules(LIBFREENECT REQUIRED libfreenect)
 find_library(LIBFREENECT_LIBRARY
   NAMES freenect
   PATHS ${LIBFREENECT_LIBRARY_DIRS}
+)
+
+add_service_files(
+  FILES
+  setAutoExposure.srv
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
 )
 
 # auto-generate dynamic reconfiguration GUI before catkin_package()
