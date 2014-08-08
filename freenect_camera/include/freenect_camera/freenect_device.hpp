@@ -55,6 +55,14 @@ namespace freenect_camera {
         shutdown();
       }
 
+      void activeDepthStream(bool active) {
+	  ROS_INFO("Changing depth stream activity");
+	  if(active)	  
+	      startDepthStream();
+	  else
+	      stopDepthStream();
+      }
+
       void setAutoExposure(bool autoExp) {
 	  freenect_flag_value val;
 	  ROS_INFO("Setting exposure");

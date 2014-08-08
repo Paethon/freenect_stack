@@ -65,20 +65,19 @@ DriverNodelet::~DriverNodelet ()
 bool DriverNodelet::setAutoExposure(freenect_camera::setAutoExposure::Request& req,
 				freenect_camera::setAutoExposure::Response& res)
 {
-    if(req.autoExposure)
-    {
-	ROS_INFO("Unlocking exposure");
-	device_->setAutoExposure(true);
-	res.result = true;
-    }
-    else
-    {
-	ROS_INFO("Locking exposure");
-	device_->setAutoExposure(false);
-	res.result = true;
-    }
+    device_->setAutoExposure(req.autoExposure);
+    res.result = true;
     return true;
 }
+
+bool DriverNodelet::activeDepthStream(freenect_camera::activeDepthStream::Request& req,
+				      freenect_camera::activeDepthStream::Response& res)
+{
+    device_->activeDepthStream(req.active);
+    res.result = true;
+    return true;
+}
+
 
 void DriverNodelet::onInit ()
 {
@@ -187,9 +186,8 @@ void DriverNodelet::onInitImpl ()
     NODELET_WARN("Using default parameters for IR camera calibration.");
 
     // Register service to turn off depth stream
-    service = param_nh.advertiseService("setAutoExposure", &DriverNodelet::setAutoExposure, this);
-
-    // ros::ServiceServer service = nh.advertiseService<freenect_camera::setAutoExposure::Request, freenect_camera::setAutoExposure::Response>("/setAutoExposure", boost::bind(&DriverNodelet::setAutoExposure, this, _1, _2));
+    setAutoExposureService = param_nh.advertiseService("setAutoExposure", &DriverNodelet::setAutoExposure, this);
+    activeDepthStreamService = param_nh.advertiseService("activeDepthStream", &DriverNodelet::activeDepthStream, this);
 
   // Advertise all published topics
   {

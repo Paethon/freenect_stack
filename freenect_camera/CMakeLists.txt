@@ -29,6 +29,7 @@ find_library(LIBFREENECT_LIBRARY
 add_service_files(
   FILES
   setAutoExposure.srv
+  activeDepthStream.srv
 )
 
 generate_messages(

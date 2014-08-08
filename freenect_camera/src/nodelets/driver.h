@@ -44,6 +44,7 @@
 #include <nodelet/nodelet.h>
 #include <image_transport/image_transport.h>
 #include <freenect_camera/setAutoExposure.h>
+#include <freenect_camera/activeDepthStream.h>
 #include <boost/thread.hpp>
 
 // Configuration
@@ -66,7 +67,8 @@ namespace freenect_camera
     public:
       virtual ~DriverNodelet ();
     private:
-      ros::ServiceServer service;
+      ros::ServiceServer setAutoExposureService;
+      ros::ServiceServer activeDepthStreamService;
       typedef FreenectConfig Config;
       typedef dynamic_reconfigure::Server<Config> ReconfigureServer;
       typedef diagnostic_updater::FrequencyStatusParam FrequencyStatusParam;
@@ -75,6 +77,8 @@ namespace freenect_camera
 
       bool setAutoExposure(freenect_camera::setAutoExposure::Request& req,
 			   freenect_camera::setAutoExposure::Response& res);
+      bool activeDepthStream(freenect_camera::activeDepthStream::Request& req,
+			     freenect_camera::activeDepthStream::Response& res);
 
       /** \brief Nodelet initialization routine. */
       virtual void onInit ();
